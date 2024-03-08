@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<nav th:fragment="nav" class="navbar bg-dark navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">DCC项目管理</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" th:href="@{/}">工作任务</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" th:href="@{/}">项目</a>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        项目类型管理
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/}">类型管理</a></li>
+                        <li><a class="dropdown-item" th:href="@{/}">子类型管理</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        客户管理
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/}">客户管理</a></li>
+                        <li><a class="dropdown-item" th:href="@{/}">品牌管理</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        用户管理
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/}">修改密码</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" th:href="@{/}">用户管理</a></li>
+                        <li><a class="dropdown-item" th:href="@{/}">角色权限管理</a></li>
+                    </ul>
+                </li>
+
+            </ul>
+
+<!--            <form class="d-flex" role="search" th:action="@{/printer/listClientPrinterPage}" method="get">-->
+<!--                <input class="form-control me-2" type="search" name="gsKeyword" placeholder="搜索打印机">-->
+<!--                <button class="btn btn-outline-success" type="submit" style="white-space: nowrap;">搜索</button>-->
+<!--            </form>-->
+
+            <form th:action="@{/logout}" method="post" class="d-flex flex-row mx-2">
+                <span class="text-white align-self-center mx-2 fs-4">当前用户：<span sec:authentication="principal.username"></span></span>
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button type="submit" class="btn btn-outline-danger">退出登录</button>
+            </form>
+        </div>
+    </div>
+</nav>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>戴伟斯科技 - 修改密码</title>
+
+    <th:block th:insert="~{share/resource::css}"></th:block>
+</head>
+<body>
+<div th:replace="~{share/navbar::nav}"></div>
+<div th:if="${param.errOldPwd}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    旧密码错误！
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+<div th:if="${param.success}" class="alert alert-success alert-dismissible fade show" role="alert">
+    密码修改成功！
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div class="container">
+    <h1>修改密码</h1>
+
+    <form id="pwdChange" method="post" th:action="@{/user/changePwd}">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <div class="mb-3">
+            <label for="oldPassword" class="form-label">旧密码</label>
+            <input type="password" class="form-control" id="oldPassword" name="oldPassword">
+        </div>
+        <div class="mb-3">
+            <label for="newPassword" class="form-label">新密码</label>
+            <input type="password" class="form-control" id="newPassword" name="newPassword">
+        </div>
+        <div class="mb-3">
+            <label for="passwordAgain" class="form-label">确认密码</label>
+            <input type="password" class="form-control" id="passwordAgain">
+        </div>
+        <button id="submitPassword" type="button" class="btn btn-primary">提交</button>
+    </form>
+</div>
+
+<th:block th:insert="~{share/resource::js}"></th:block>
+<script>
+    $('#submitPassword').on('click', (e) => {
+        let password = $('#newPassword').val()
+        let passwordAgain = $('#passwordAgain').val()
+        if (!(password === passwordAgain)) {
+            bootbox.alert("两次密码不一致！")
+            return
+        }
+        $('#pwdChange').submit()
+    })
+</script>
+</body>
+</html>
