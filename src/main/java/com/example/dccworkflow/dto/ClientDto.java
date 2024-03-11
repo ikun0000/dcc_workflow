@@ -1,50 +1,27 @@
-package com.example.dccworkflow.entity;
+package com.example.dccworkflow.dto;
 
-import javax.persistence.*;
-
-@Entity
-public class Client {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ClientDto {
     private Long id;
-
-    @Column(unique = true, nullable = false)
     private String clientId;
-
-    @Column(nullable = false)
     private String clientName;
-
-    @Column(nullable = false)
     private String clientAddress;
-
     private String managerName;
-
     private String phone1;
-
     private String phone2;
-
     private String phone3;
-
     private String company;
-
     private String taxNumber;
-
-    @ManyToOne
-    private Brand brand;
-
     private String city;
-
     private Integer clientState;
-
     private String clientEmail;
-
     private String backupField1;
-
     private String backupField2;
-
     private String backupField3;
-
     private String note;
+
+    private Long brandId;
+    private String brandName;
+    private String brandRef;
 
     public Long getId() {
         return id;
@@ -182,11 +159,27 @@ public class Client {
         this.note = note;
     }
 
-    public Brand getBrand() {
-        return brand;
+    public Long getBrandId() {
+        return brandId;
     }
 
-    public void setBrand(Brand brand) {
-        this.brand = brand;
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
+    }
+
+    public String getBrandName() {
+        return brandName;
+    }
+
+    public void setBrandName(String brandName) {
+        this.brandName = brandName;
+    }
+
+    public String getBrandRef() {
+        return brandRef;
+    }
+
+    public void setBrandRef(String brandRef) {
+        this.brandRef = brandRef;
     }
 }

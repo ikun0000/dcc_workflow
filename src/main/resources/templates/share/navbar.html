@@ -19,7 +19,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" th:href="@{/}">项目</a>
+                    <a class="nav-link" aria-current="page" th:href="@{/}">我的项目</a>
                 </li>
 
                 <li class="nav-item dropdown">
@@ -27,8 +27,8 @@
                         项目类型管理
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" th:href="@{/}">类型管理</a></li>
-                        <li><a class="dropdown-item" th:href="@{/}">子类型管理</a></li>
+                        <li><a class="dropdown-item" th:href="@{/projectType/parentTypePage}">类型管理</a></li>
+                        <li><a class="dropdown-item" th:href="@{/projectType/subTypePage}">子类型管理</a></li>
                     </ul>
                 </li>
 
@@ -37,17 +37,26 @@
                         客户管理
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" th:href="@{/}">客户管理</a></li>
-                        <li><a class="dropdown-item" th:href="@{/}">品牌管理</a></li>
+                        <li><a class="dropdown-item" th:href="@{/client/clientListPage}">客户管理</a></li>
+                        <li><a class="dropdown-item" th:href="@{/client/brandListPage}">品牌管理</a></li>
                     </ul>
                 </li>
 
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        用户管理
+                        个人信息
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" th:href="@{/}">修改密码</a></li>
+                        <li><a class="dropdown-item" th:href="@{/user/changePwdPage}">修改密码</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        系统管理
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/}">流程管理</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" th:href="@{/}">用户管理</a></li>
                         <li><a class="dropdown-item" th:href="@{/}">角色权限管理</a></li>

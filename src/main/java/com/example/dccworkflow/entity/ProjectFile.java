@@ -14,6 +14,8 @@ public class ProjectFile {
 
     private String physical;
 
+    private Integer fileType;
+
     @ManyToOne
     private ProjectForm projectForm;
 
@@ -55,5 +57,13 @@ public class ProjectFile {
 
     public void setProjectForm(ProjectForm projectForm) {
         this.projectForm = projectForm;
+    }
+
+    public Integer getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(Integer fileType) {
+        this.fileType = fileType;
     }
 }

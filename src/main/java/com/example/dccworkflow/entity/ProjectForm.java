@@ -79,11 +79,14 @@ public class ProjectForm {
     private LocalDateTime lastModifyDateTime;
 
     @ManyToOne
-    private User initiator;
+    private User handler;
 
     private String processInstanceId;
 
     private String processDefinitionId;
+
+    @OneToMany(mappedBy = "projectForm")
+    private List<ProjectLog> projectLogs;
 
     public Long getId() {
         return id;
@@ -309,12 +312,12 @@ public class ProjectForm {
         this.lastModifyDateTime = lastModifyDateTime;
     }
 
-    public User getInitiator() {
-        return initiator;
+    public User getHandler() {
+        return handler;
     }
 
-    public void setInitiator(User initiator) {
-        this.initiator = initiator;
+    public void setHandler(User handler) {
+        this.handler = handler;
     }
 
     public String getProcessInstanceId() {
@@ -339,5 +342,13 @@ public class ProjectForm {
 
     public void setProjectFiles(List<ProjectFile> projectFiles) {
         this.projectFiles = projectFiles;
+    }
+
+    public List<ProjectLog> getProjectLogs() {
+        return projectLogs;
+    }
+
+    public void setProjectLogs(List<ProjectLog> projectLogs) {
+        this.projectLogs = projectLogs;
     }
 }

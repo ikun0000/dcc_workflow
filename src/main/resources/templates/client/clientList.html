@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>戴伟斯科技 - 客户管理</title>
+
+    <th:block th:insert="~{share/resource::css}"></th:block>
+</head>
+<body>
+<div th:replace="~{share/navbar::nav}"></div>
+<div th:if="${param.success}" class="alert alert-success alert-dismissible fade show" role="alert">
+    操作成功
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div th:if="${param.AddFail}" class="alert alert-success alert-dismissible fade show" role="alert">
+    添加用户失败，请检查数据是否合法
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div th:if="${param.UpdateFail}" class="alert alert-success alert-dismissible fade show" role="alert">
+    更新用户失败，请检查数据是否合法
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+<div class="container-fluid">
+    <h1>客户管理</h1>
+
+    <div class="mb-3 mt-2">
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addClientModal">添加客户</button>
+    </div>
+    <div id="toolbar" class="row g-3 align-items-center">
+        <div class="col-auto">
+            <label for="search" class="col-form-label">搜索客户：</label>
+        </div>
+        <div class="col-auto">
+            <input type="text" id="search" class="form-control">
+        </div>
+    </div>
+    <table id="table"></table>
+
+
+    <!-- Add Client Modal -->
+    <div class="modal fade modal-dialog-scrollable modal-xl" id="addClientModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addClientModal1">添加客户</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" th:action="@{/client/addClient}">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <div class="modal-body">
+                        <table class="table table-bordered w-100">
+                            <tbody>
+                            <tr>
+                                <th class="text-danger">客户编号</th>
+                                <td>
+                                    <input required class="form-control" type="text" name="clientId">
+                                </td>
+                                <th class="text-danger">客户名称</th>
+                                <td colspan="3">
+                                    <input required class="form-control" type="text" name="clientName">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-danger">客户地址</th>
+                                <td colspan="5">
+                                    <input required class="form-control" type="text" name="clientAddress">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-danger">品牌</th>
+                                <td colspan="2">
+                                    <select required class="form-control selectpicker" name="brand" id="brand1" data-live-search="true">
+                                    </select>
+                                </td>
+                                <th class="text-danger">城市</th>
+                                <td colspan="2">
+                                    <select required class="form-control selectpicker" name="city" id="city1" data-live-search="true">
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>门店经理</th>
+                                <td colspan="2">
+                                    <input class="form-control" type="text" name="managerName">
+                                </td>
+                                <th>电子邮箱</th>
+                                <td colspan="2">
+                                    <input class="form-control" type="email" name="clientEmail">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>电话1</th>
+                                <td>
+                                    <input class="form-control" type="text" name="phone1">
+                                </td>
+                                <th>电话2</th>
+                                <td>
+                                    <input class="form-control" type="text" name="phone2">
+                                </td>
+                                <th>电话3</th>
+                                <td>
+                                    <input class="form-control" type="text" name="phone3">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>所属公司</th>
+                                <td colspan="2">
+                                    <input class="form-control" type="text" name="company">
+                                </td>
+                                <th>所属公司税号</th>
+                                <td colspan="2">
+                                    <input class="form-control" type="text" name="taxNumber">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>备用1</th>
+                                <td>
+                                    <input class="form-control" type="text" name="backupField1">
+                                </td>
+                                <th>备用2</th>
+                                <td>
+                                    <input class="form-control" type="text" name="backupField2">
+                                </td>
+                                <th>备用3</th>
+                                <td>
+                                    <input class="form-control" type="text" name="backupField3">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>备注</th>
+                                <td colspan="5">
+                                    <textarea class="form-control" rows="3" name="note"></textarea>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-success">添加</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Client Modal -->
+    <div class="modal fade modal-dialog-scrollable modal-xl" id="updateClientModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="updateClientModal1">查看/编辑客户</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" th:action="@{/client/updateClient}">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <input type="hidden" id="id2" name="id">
+                    <div class="modal-body">
+                        <table class="table table-bordered w-100">
+                            <tbody>
+                            <tr>
+                                <th class="text-danger">客户编号</th>
+                                <td>
+                                    <input required class="form-control" type="text" name="clientId" id="clientId2" disabled>
+                                </td>
+                                <th class="text-danger">客户名称</th>
+                                <td colspan="3">
+                                    <input required class="form-control" type="text" name="clientName" id="clientName2">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-danger">客户地址</th>
+                                <td colspan="5">
+                                    <input required class="form-control" type="text" name="clientAddress" id="clientAddress2">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-danger">品牌</th>
+                                <td colspan="2">
+                                    <select required class="form-control selectpicker" name="brand" id="brand2" data-live-search="true">
+                                    </select>
+                                </td>
+                                <th class="text-danger">城市</th>
+                                <td colspan="2">
+                                    <select required class="form-control selectpicker" name="city" id="city2" data-live-search="true">
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>门店经理</th>
+                                <td colspan="2">
+                                    <input class="form-control" type="text" name="managerName" id="managerName2">
+                                </td>
+                                <th>电子邮箱</th>
+                                <td colspan="2">
+                                    <input class="form-control" type="email" name="clientEmail" id="clientEmail2">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>电话1</th>
+                                <td>
+                                    <input class="form-control" type="text" name="phone1" id="phone1_2">
+                                </td>
+                                <th>电话2</th>
+                                <td>
+                                    <input class="form-control" type="text" name="phone2" id="phone2_2">
+                                </td>
+                                <th>电话3</th>
+                                <td>
+                                    <input class="form-control" type="text" name="phone3" id="phone3_2">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>所属公司</th>
+                                <td colspan="2">
+                                    <input class="form-control" type="text" name="company" id="company2">
+                                </td>
+                                <th>所属公司税号</th>
+                                <td colspan="2">
+                                    <input class="form-control" type="text" name="taxNumber" id="taxNumber2">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>备用1</th>
+                                <td>
+                                    <input class="form-control" type="text" name="backupField1" id="backupField1_2">
+                                </td>
+                                <th>备用2</th>
+                                <td>
+                                    <input class="form-control" type="text" name="backupField2" id="backupField2_2">
+                                </td>
+                                <th>备用3</th>
+                                <td>
+                                    <input class="form-control" type="text" name="backupField3" id="backupField3_2">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>备注</th>
+                                <td colspan="5">
+                                    <textarea class="form-control" rows="3" name="note" id="note2"></textarea>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-success">更新信息</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:insert="~{share/resource::js}"></th:block>
+<script>
+    function initCity() {
+        $.ajax({
+            url: "/json/chinaCity.json",
+            type: "get",
+            success(res) {
+                res.citys.forEach(city => {
+                    $('#city1').append('<option value="' + city +'">' + city + '</option>')
+                    $('#city2').append('<option value="' + city +'">' + city + '</option>')
+                    $('#city1').selectpicker('refresh')
+                    $('#city2').selectpicker('refresh')
+                })
+            },
+            error(jqXHR, textStatus, errorThrown) {
+                /*弹出jqXHR对象的信息*/
+                console.log(jqXHR.responseText);
+                console.log(jqXHR.status);
+                console.log(jqXHR.readyState);
+                console.log(jqXHR.statusText);
+                /*弹出其他两个参数的信息*/
+                console.log(textStatus);
+                console.log(errorThrown);
+            }
+        })
+    }
+    initCity()
+
+    function initBrand() {
+        $.ajax({
+            url: "/client/brandList.json",
+            type: "get",
+            success(res) {
+                res.body.forEach(brand => {
+                    $('#brand1').append('<option value="' + brand.id +'">' + brand.name + '</option>')
+                    $('#brand2').append('<option value="' + brand.id +'">' + brand.name + '</option>')
+                    $('#brand1').selectpicker('refresh')
+                    $('#brand2').selectpicker('refresh')
+                })
+            },
+            error(jqXHR, textStatus, errorThrown) {
+                /*弹出jqXHR对象的信息*/
+                console.log(jqXHR.responseText);
+                console.log(jqXHR.status);
+                console.log(jqXHR.readyState);
+                console.log(jqXHR.statusText);
+                /*弹出其他两个参数的信息*/
+                console.log(textStatus);
+                console.log(errorThrown);
+            }
+        })
+    }
+    initBrand()
+
+
+    $('#table').bootstrapTable({
+        method: "get",
+        url: "/client/clientList.bt",
+        toolbar: "#toolbar",
+        striped: false,
+        pagination: true,
+        pageNumber: 1,
+        sidePagination: "server",
+        pageSize: 10,
+        pageList: [10, 25, 50, 100],
+        queryParamsType: "",
+        queryParams: (params) => {
+            return {
+                page: params.pageNumber,
+                size: params.pageSize,
+                search: $('#search').val()
+            }
+        },
+        columns: [
+            {title: "客户编号", field: "clientId"},
+            {title: "客户名称", field: "clientName"},
+            {title: "客户地址", field: "clientAddress"},
+            {title: "门店经理", field: "managerName"},
+            {title: "电话1", field: "phone1"},
+            {title: "电子邮箱", field: "clientEmail"},
+            {title: "品牌", field: "brandName"},
+            {
+                title: "操作",
+                formatter: (value, rows, index) => {
+                    let content = ''
+                    content += '<button id="edit-client" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateClientModal">查看/编辑信息</button>'
+                    return content
+                },
+                events: {
+                    'click #edit-client': (e, value, rows, index) => {
+                        $('#id2').val(rows.id)
+                        $('#clientId2').val(rows.clientId)
+                        $('#clientName2').val(rows.clientName)
+                        $('#clientAddress2').val(rows.clientAddress)
+                        $('#managerName2').val(rows.managerName)
+                        $('#clientEmail2').val(rows.clientEmail)
+                        $('#phone1_2').val(rows.phone1)
+                        $('#phone2_2').val(rows.phone2)
+                        $('#phone3_2').val(rows.phone3)
+                        $('#backupField1_2').val(rows.backupField1)
+                        $('#backupField2_2').val(rows.backupField2)
+                        $('#backupField3_2').val(rows.backupField3)
+                        $('#note2').val(rows.note)
+                        $('#company2').val(rows.company)
+                        $('#taxNumber2').val(rows.taxNumber)
+
+                        $('#brand2').val(rows.brandId)
+                        $('#city2').val(rows.city)
+
+                        $('#brand2').selectpicker('refresh')
+                        $('#city2').selectpicker('refresh')
+                    }
+                }
+            }
+        ],
+        responseHandler: (res) => {
+            if (res.code !== 0) {
+                alert(res.msg)
+                return null
+            }
+            return res.body
+        }
+    })
+
+    $('#search').on('input', (e) => {
+        $('#table').bootstrapTable('refresh')
+    })
+</script>
+</body>
+</html>
