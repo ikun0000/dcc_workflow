@@ -13,9 +13,6 @@ public class Role {
     @Column(nullable = false)
     private String name;
 
-//    @ManyToMany(mappedBy = "roles")
-//    private Set<User> users;
-
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Permission> permissions;
 
@@ -35,14 +32,6 @@ public class Role {
         this.name = name;
     }
 
-//    public Set<User> getUsers() {
-//        return users;
-//    }
-//
-//    public void setUsers(Set<User> users) {
-//        this.users = users;
-//    }
-
     public Set<Permission> getPermissions() {
         return permissions;
     }
@@ -56,11 +45,11 @@ public class Role {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Role role = (Role) o;
-        return Objects.equals(name, role.name);
+        return Objects.equals(id, role.id) && Objects.equals(name, role.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(id, name);
     }
 }

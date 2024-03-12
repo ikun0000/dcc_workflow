@@ -15,8 +15,8 @@ public class Permission implements GrantedAuthority {
     @Column(nullable = false)
     private String name;
 
-//    @ManyToMany(mappedBy = "permissions")
-//    private Set<Role> roles;
+    @Column(nullable = false)
+    private String content;
 
     public Long getId() {
         return id;
@@ -34,17 +34,17 @@ public class Permission implements GrantedAuthority {
         this.name = name;
     }
 
-//    public Set<Role> getRoles() {
-//        return roles;
-//    }
-//
-//    public void setRoles(Set<Role> roles) {
-//        this.roles = roles;
-//    }
-
     @Override
     public String getAuthority() {
         return this.name;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     @Override
@@ -52,11 +52,11 @@ public class Permission implements GrantedAuthority {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Permission that = (Permission) o;
-        return Objects.equals(name, that.name);
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(id, name);
     }
 }

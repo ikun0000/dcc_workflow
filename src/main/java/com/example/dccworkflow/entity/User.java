@@ -20,12 +20,6 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    private Boolean accountNonExpired;
-
-    private Boolean accountNonLocked;
-
-    private Boolean credentialsNonExpired;
-
     private Boolean enabled;
 
     private String phone;
@@ -52,29 +46,17 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return this.accountNonExpired;
-    }
-
-    public void setAccountNonExpired(Boolean accountNonExpired) {
-        this.accountNonExpired = accountNonExpired;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return this.accountNonLocked;
-    }
-
-    public void setAccountNonLocked(Boolean accountNonLocked) {
-        this.accountNonLocked = accountNonLocked;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return this.credentialsNonExpired;
-    }
-
-    public void setCredentialsNonExpired(Boolean credentialsNonExpired) {
-        this.credentialsNonExpired = credentialsNonExpired;
+        return true;
     }
 
     @Override

@@ -51,15 +51,7 @@ public class ProjectForm {
 
     private Boolean materialArrangement;
 
-    private String projectState1;
-
-    private String projectState2;
-
-    private String note1;
-
-    private String note2;
-
-    private String note3;
+    private String note;
 
     private String projectFileLocation;
 
@@ -71,6 +63,8 @@ public class ProjectForm {
     private LocalDate invoiceSubmitDate;
 
     private String invoiceNote;
+
+    private Integer projectState;
 
     private Boolean finished;
 
@@ -216,44 +210,12 @@ public class ProjectForm {
         this.materialArrangement = materialArrangement;
     }
 
-    public String getProjectState1() {
-        return projectState1;
+    public String getNote() {
+        return note;
     }
 
-    public void setProjectState1(String projectState1) {
-        this.projectState1 = projectState1;
-    }
-
-    public String getProjectState2() {
-        return projectState2;
-    }
-
-    public void setProjectState2(String projectState2) {
-        this.projectState2 = projectState2;
-    }
-
-    public String getNote1() {
-        return note1;
-    }
-
-    public void setNote1(String note1) {
-        this.note1 = note1;
-    }
-
-    public String getNote2() {
-        return note2;
-    }
-
-    public void setNote2(String note2) {
-        this.note2 = note2;
-    }
-
-    public String getNote3() {
-        return note3;
-    }
-
-    public void setNote3(String note3) {
-        this.note3 = note3;
+    public void setNote(String note) {
+        this.note = note;
     }
 
     public String getProjectFileLocation() {
@@ -350,5 +312,13 @@ public class ProjectForm {
 
     public void setProjectLogs(List<ProjectLog> projectLogs) {
         this.projectLogs = projectLogs;
+    }
+
+    public Integer getProjectState() {
+        return projectState;
+    }
+
+    public void setProjectState(Integer projectState) {
+        this.projectState = projectState;
     }
 }
