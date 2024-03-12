@@ -61,16 +61,7 @@ public class RolePermissionService {
     public Role addRole(String name) {
         Role role = new Role();
         role.setName(name);
-        role = roleRepository.save(role);
-
-        // 添加默认权限
-        Permission permission = new Permission();
-        permission.setId(1L);
-        Set<Permission> permissionSet = new HashSet<>();
-        permissionSet.add(permission);
-        role.setPermissions(permissionSet);
-
-        return role;
+        return roleRepository.save(role);
     }
 
     @Transactional(readOnly = true)
@@ -99,5 +90,10 @@ public class RolePermissionService {
         role.setPermissions(permissionList.stream().collect(Collectors.toSet()));
 
         return role;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Role> getAllRole() {
+        return roleRepository.findAll();
     }
 }

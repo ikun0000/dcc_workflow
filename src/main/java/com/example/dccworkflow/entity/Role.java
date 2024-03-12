@@ -1,6 +1,7 @@
 package com.example.dccworkflow.entity;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -10,11 +11,11 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    private Set<Permission> permissions;
+    private Set<Permission> permissions = new HashSet<>();
 
     public Long getId() {
         return id;

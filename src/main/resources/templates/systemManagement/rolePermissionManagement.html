@@ -8,6 +8,10 @@
 </head>
 <body>
 <div th:replace="~{share/navbar::nav}"></div>
+<div th:if="${param.addFail}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    已经存在该角色，无法继续添加
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 
 <div class="container">
     <h1>角色权限管理</h1>
@@ -45,14 +49,14 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                        <button type="submit" class="btn btn-success">提交</button>
+                        <button type="submit" class="btn btn-success">添加</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!--  Edit Role Modal  -->
+    <!--  Edit Role-Permission Modal  -->
     <div class="modal fade modal-dialog-scrollable" id="editRoleModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -164,7 +168,6 @@
                                 let inputList = $('input[name="permissionSet"]');
                                 for (let i = 0; i < inputList.length; i++) {
                                     inputList[i].checked = false
-                                    console.log(111)
                                 }
 
                                 // 选中该角色拥有的权限
