@@ -6,7 +6,8 @@ public enum ResultType {
     PARENT_PROJECT_TYPE_REF(2, "项目类型已经被引用，无法删除"),
     SUB_PROJECT_TYPE_REF(3, "项目子类型已经被引用，无法删除"),
     ROLE_REF(4, "角色已被引用，无法删除"),
-    USER_REF(5, "用户已被引用，无法删除");
+    USER_REF(5, "用户已被引用，无法删除"),
+    PROC_DEF_CASECADE(6, "流程已被引用，无法直接删除");
 
 
     private Integer code;

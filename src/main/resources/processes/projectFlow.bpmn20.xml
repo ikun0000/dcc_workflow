@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/processdef">
-  <process id="projectFlow_V1" name="projectFlow_V1" isExecutable="true">
+  <process id="projectFlow" name="projectFlow" isExecutable="true">
     <startEvent id="sid-95d45e3f-3054-4789-a0f5-b6786d111db9"/>
     <userTask id="sid-9d0f1862-de20-4ee1-b5d3-3731e50b939d" name="计划"/>
     <sequenceFlow id="sid-33f1ae2d-1887-4556-b485-c10006e00364" sourceRef="sid-95d45e3f-3054-4789-a0f5-b6786d111db9" targetRef="sid-9d0f1862-de20-4ee1-b5d3-3731e50b939d"/>
@@ -33,7 +33,7 @@
     </sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_projectFlow_V1">
-    <bpmndi:BPMNPlane bpmnElement="projectFlow_V1" id="BPMNPlane_projectFlow_V1">
+    <bpmndi:BPMNPlane bpmnElement="projectFlow" id="BPMNPlane_projectFlow_V1">
       <bpmndi:BPMNShape id="shape-80c66387-bb5f-4d82-9142-50be7a0bfaab" bpmnElement="sid-95d45e3f-3054-4789-a0f5-b6786d111db9">
         <omgdc:Bounds x="-185.0" y="-75.0" width="30.0" height="30.0"/>
       </bpmndi:BPMNShape>

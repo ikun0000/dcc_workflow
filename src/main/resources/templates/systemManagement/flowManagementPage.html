@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>戴伟斯科技 - 流程管理</title>
+
+    <th:block th:insert="~{share/resource::css}"></th:block>
+</head>
+<body>
+<div th:replace="~{share/navbar::nav}"></div>
+
+<div th:if="${param.deployFailZip}" class="alert alert-warning alert-dismissible fade show" role="alert">
+    流程部署失败，必须是ZIP文件
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div th:if="${param.deployFail}" class="alert alert-warning alert-dismissible fade show" role="alert">
+    流程部署失败
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div th:if="${param.deleteFail}" class="alert alert-warning alert-dismissible fade show" role="alert">
+    流程删除失败
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div class="container-fluid">
+    <h1>流程管理</h1>
+
+    <div class="mb-3 mt-2">
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#uploadWorkFlowModal">更新工作流</button>
+    </div>
+
+    <table id="table"></table>
+
+
+    <!-- Add Role Model -->
+    <div class="modal fade" id="uploadWorkFlowModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="uploadWorkFlowModal1">部署流程</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form th:action="@{/systemManagement/deployWorkflow}" method="post" enctype="multipart/form-data">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">部署名称</label>
+                            <input required type="text" class="form-control" name="name" id="name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">BPMN和PNG图片的ZIP文件</label>
+                            <input required type="file" class="form-control" name="file" id="file">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-success">部署</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Workflow Model -->
+    <div class="modal fade" id="showDeleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="showDeleteModal1">删除流程</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form th:action="@{/systemManagement/deleteProcDef}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <input type="hidden" id="deploymentId" name="deploymentId">
+                    <div class="modal-body">
+                        <p>是否删除流程定义：<br><span class="text-danger fw-semibold" id="procDefId_show"></span></p>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="cascade" id="cascade">
+                            <label class="form-check-label" for="cascade">
+                                删除流程定义下的任务
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-danger">删除</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<th:block th:insert="~{share/resource::js}"></th:block>
+<script>
+
+
+    $('#table').bootstrapTable({
+        method: "get",
+        url: "/systemManagement/workflowList.bt",
+        striped: false,
+        columns: [
+            {title: "流程定义ID", field: "procDefId"},
+            {title: "流程部署ID", field: "deploymentId"},
+            {title: "流程定义KEY", field: "procDefKey"},
+            {title: "流程部署名", field: "deploymentName"},
+            {title: "BPMN", field: "resourceName", formatter: (value, rows, index) => '<a class="link-primary" href="/systemManagement/workFlowResource?deploymentId=' + rows.deploymentId + '&resourceName=' + value + '">' + value + '</a>'  },
+            {title: "PNG", field: "dgrmResourceName", formatter: (value, rows, index) => '<a class="link-primary" href="/systemManagement/workFlowResource?deploymentId=' + rows.deploymentId + '&resourceName=' + value + '">' + value + '</a>'  },
+            {title: "部署时间", field: "deployTime"},
+            {
+                title: "操作",
+                formatter: (value, rows, index) => {
+                    let content = '<div class="btn-group" role="group">'
+                    content += '<button id="remove" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#showDeleteModal">删除</button>'
+                    content += '</div>'
+                    return content
+                },
+                events: {
+                    'click #remove': (e, value, rows, index) => {
+                        $('#procDefId_show').text(rows.procDefId)
+                        $('#deploymentId').val(rows.deploymentId)
+                    }
+                }
+            }
+        ],
+        responseHandler: (res) => {
+            if (res.code !== 0) {
+                alert(res.msg)
+                return null
+            }
+            return res.body
+        }
+    })
+</script>
+</body>
+</html>

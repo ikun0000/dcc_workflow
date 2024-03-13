@@ -34,6 +34,10 @@ spring:
 #    database-schema-update: true
     async-executor-activate: false
 
+  servlet:
+    multipart:
+      max-file-size: 100MB
+
 logging:
   level:
     org.activiti.engine.impl.persistence.entity: trace

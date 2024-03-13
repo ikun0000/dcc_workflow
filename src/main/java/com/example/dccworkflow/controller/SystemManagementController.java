@@ -7,16 +7,27 @@ import com.example.dccworkflow.exception.UserNotFoundException;
 import com.example.dccworkflow.service.RolePermissionService;
 import com.example.dccworkflow.service.UserService;
 import org.activiti.engine.RepositoryService;
+import org.activiti.engine.repository.Deployment;
+import org.activiti.engine.repository.ProcessDefinition;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipInputStream;
 
 @Controller
 @RequestMapping("/systemManagement")
@@ -168,5 +179,89 @@ public class SystemManagementController {
     public Result<List<RoleDto>> userHasRoleJSON(@RequestParam Long userId) throws UserNotFoundException {
         List<RoleDto> roleDtos = userService.getUserHasRoleDto(userId);
         return Result.of(ResultType.SUCCESS, roleDtos);
+    }
+
+    @GetMapping("/flowManagementPage")
+    public String flowManagementPage() {
+        return "systemManagement/flowManagementPage";
+    }
+
+    @GetMapping("/workflowList.bt")
+    @ResponseBody
+    public Result<BTResult<WorkflowDto>> workflowListBT() {
+        List<ProcessDefinition> procDefList = repositoryService.createProcessDefinitionQuery()
+                .list();
+
+        List<WorkflowDto> workflowDtos = procDefList.stream().map(processDefinition -> {
+            WorkflowDto dto = new WorkflowDto();
+            dto.setProcDefId(processDefinition.getId());
+            dto.setProcDefName(processDefinition.getName());
+            dto.setProcDefKey(processDefinition.getKey());
+            dto.setResourceName(processDefinition.getResourceName());
+            dto.setDgrmResourceName(processDefinition.getDiagramResourceName());
+
+            Deployment deployment = repositoryService.createDeploymentQuery()
+                    .deploymentId(processDefinition.getDeploymentId())
+                    .singleResult();
+            dto.setDeploymentId(processDefinition.getDeploymentId());
+            dto.setDeploymentName(deployment.getName());
+            dto.setDeploymentKey(deployment.getKey());
+
+            Instant instant = deployment.getDeploymentTime().toInstant();
+            dto.setDeployTime(instant.atZone(ZoneId.systemDefault()).toLocalDateTime());
+
+            return dto;
+        }).toList();
+
+        return Result.of(ResultType.SUCCESS,
+                BTResult.of(workflowDtos, workflowDtos.stream().count()));
+    }
+
+    @GetMapping("/workFlowResource")
+    @ResponseBody
+    public ResponseEntity<byte[]> workFlowResource(@RequestParam String deploymentId,
+                                                   @RequestParam String resourceName) throws IOException {
+        InputStream in = repositoryService.getResourceAsStream(deploymentId, resourceName);
+        byte[] resourceBytes = in.readAllBytes();
+        in.close();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + resourceName);
+        return new ResponseEntity<>(resourceBytes,
+                headers, HttpStatus.OK);
+    }
+
+    @PostMapping("/deployWorkflow")
+    public RedirectView deployWorkflow(@RequestParam String name,
+                                 @RequestParam MultipartFile file) {
+        String filename = file.getOriginalFilename();
+        if (!filename.toLowerCase().endsWith(".zip")) {
+            return new RedirectView("/systemManagement/flowManagementPage?deployFailZip");
+        }
+
+        try(InputStream inputStream = file.getInputStream();
+            ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
+
+            repositoryService.createDeployment()
+                    .addZipInputStream(zipInputStream)
+                    .name(name)
+                    .deploy();
+
+        } catch (IOException e) {
+            return new RedirectView("/systemManagement/flowManagementPage?deployFail");
+        }
+
+        return new RedirectView("/systemManagement/flowManagementPage");
+    }
+
+    @PostMapping("/deleteProcDef")
+    public RedirectView deleteProcDef(@RequestParam String deploymentId,
+                                        @RequestParam(defaultValue = "false") Boolean cascade) {
+        try {
+            repositoryService.deleteDeployment(deploymentId, cascade);
+        } catch (Exception e) {
+            return new RedirectView("/systemManagement/flowManagementPage?deleteFail");
+        }
+        return new RedirectView("/systemManagement/flowManagementPage");
     }
 }
