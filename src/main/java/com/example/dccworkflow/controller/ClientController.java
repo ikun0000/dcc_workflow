@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/client")
+@PreAuthorize("hasAuthority('client_edit')")
 public class ClientController {
     private ClientService clientService;
     private BrandService brandService;

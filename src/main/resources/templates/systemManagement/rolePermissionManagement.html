@@ -69,8 +69,8 @@
                     <input type="hidden" id="roleId" name="roleId">
                     <div class="modal-body">
                         <div class="form-check form-switch" th:each="permission:${permissionList}">
-                            <input class="form-check-input" type="checkbox" role="switch" th:id="'permission-' + ${permission.name}" th:value="${permission.id}" name="permissionSet">
-                            <label class="form-check-label" th:for="'permission-' + ${permission.name}" th:text="${permission.content}"></label>
+                            <input class="form-check-input" type="checkbox" role="switch" th:id="'permission-select-id-' + ${permission.id}" th:value="${permission.id}" name="permissionSet">
+                            <label class="form-check-label" th:for="'permission-select-id-' + ${permission.id}" th:text="${permission.content}"></label>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -171,8 +171,8 @@
                                 }
 
                                 // 选中该角色拥有的权限
-                                res.body.forEach(hasRole => {
-                                    $('#permission-' + hasRole.name).prop("checked", true)
+                                res.body.forEach(hasPermission => {
+                                    $('#permission-select-id-' + hasPermission.id).prop("checked", true)
                                 })
                             },
                             error(jqXHR, textStatus, errorThrown) {

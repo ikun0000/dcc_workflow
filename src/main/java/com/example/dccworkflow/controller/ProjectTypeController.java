@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/projectType")
+@PreAuthorize("hasAuthority('edit_project_type')")
 public class ProjectTypeController {
     private ProjectTypeService projectTypeService;
 

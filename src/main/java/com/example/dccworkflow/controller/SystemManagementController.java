@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,7 @@ import java.util.zip.ZipInputStream;
 
 @Controller
 @RequestMapping("/systemManagement")
+@PreAuthorize("hasAuthority('system_management')")
 public class SystemManagementController {
     private RepositoryService repositoryService;
     private UserService userService;
@@ -190,6 +192,8 @@ public class SystemManagementController {
     @ResponseBody
     public Result<BTResult<WorkflowDto>> workflowListBT() {
         List<ProcessDefinition> procDefList = repositoryService.createProcessDefinitionQuery()
+                .orderByProcessDefinitionVersion()
+                .desc()
                 .list();
 
         List<WorkflowDto> workflowDtos = procDefList.stream().map(processDefinition -> {
