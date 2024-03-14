@@ -18,7 +18,6 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/client")
-@PreAuthorize("hasAuthority('client_edit')")
 public class ClientController {
     private ClientService clientService;
     private BrandService brandService;
@@ -29,6 +28,7 @@ public class ClientController {
     }
 
     @GetMapping("/brandListPage")
+    @PreAuthorize("hasAuthority('client_edit')")
     public String brandListPage() {
         return "client/brandList";
     }
@@ -41,6 +41,7 @@ public class ClientController {
     }
 
     @GetMapping("/brandList.bt")
+    @PreAuthorize("hasAuthority('client_edit')")
     @ResponseBody
     public Result<BTResult<BrandDto>> brandListBT(@RequestParam(defaultValue = "") String search,
                                                   @RequestParam(defaultValue = "1") Integer page,
@@ -51,6 +52,7 @@ public class ClientController {
     }
 
     @PostMapping("/addBrand")
+    @PreAuthorize("hasAuthority('client_edit')")
     public RedirectView addBrand(@RequestParam String name,
                                  @RequestParam String ref) {
         brandService.addBrand(name, ref);
@@ -58,6 +60,7 @@ public class ClientController {
     }
 
     @PostMapping("/removeBrand")
+    @PreAuthorize("hasAuthority('client_edit')")
     @ResponseBody
     public Result<Object> removeBrand(@RequestParam Long brandId) {
         try {
@@ -69,11 +72,13 @@ public class ClientController {
     }
 
     @GetMapping("/clientListPage")
+    @PreAuthorize("hasAuthority('client_edit')")
     public String clientListPage() {
         return "client/clientList";
     }
 
     @GetMapping("/clientList.bt")
+    @PreAuthorize("hasAuthority('client_edit')")
     @ResponseBody
     public Result<BTResult<ClientDto>> clientListBT(@RequestParam(defaultValue = "") String search,
                                                     @RequestParam(defaultValue = "1") Integer page,
@@ -86,6 +91,7 @@ public class ClientController {
     }
 
     @PostMapping("/addClient")
+    @PreAuthorize("hasAuthority('client_edit')")
     public RedirectView addClient(@RequestParam String clientId,
                                   @RequestParam String clientName,
                                   @RequestParam String clientAddress,
@@ -129,6 +135,7 @@ public class ClientController {
     }
 
     @PostMapping("/updateClient")
+    @PreAuthorize("hasAuthority('client_edit')")
     public RedirectView updateClient(@RequestParam Long id,
                                       String clientId,
                                       @RequestParam String clientName,
@@ -170,5 +177,12 @@ public class ClientController {
         }
 
         return new RedirectView("/client/clientListPage?success");
+    }
+
+    @GetMapping("/clientList.json")
+    @ResponseBody
+    public Result<List<ClientDto>> clientListJSON() {
+        Page<ClientDto> clientDto = clientService.getClientDto(null, Pageable.unpaged());
+        return Result.of(ResultType.SUCCESS, clientDto.getContent());
     }
 }

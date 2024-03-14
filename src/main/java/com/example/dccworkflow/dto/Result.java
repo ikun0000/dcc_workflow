@@ -2,7 +2,9 @@ package com.example.dccworkflow.dto;
 
 import com.example.dccworkflow.enums.ResultType;
 
-public class Result<T> {
+import java.io.Serializable;
+
+public class Result<T> implements Serializable {
     private Integer code;
     private String message;
     private T body;

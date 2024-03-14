@@ -1,8 +1,9 @@
 package com.example.dccworkflow.dto;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class BTResult<T> {
+public class BTResult<T> implements Serializable {
     private List<T> rows;
     private Long total;
 

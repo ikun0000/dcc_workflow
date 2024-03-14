@@ -13,12 +13,12 @@
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 
-<div th:if="${param.AddFail}" class="alert alert-success alert-dismissible fade show" role="alert">
+<div th:if="${param.AddFail}" class="alert alert-danger alert-dismissible fade show" role="alert">
     添加用户失败，请检查数据是否合法
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 
-<div th:if="${param.UpdateFail}" class="alert alert-success alert-dismissible fade show" role="alert">
+<div th:if="${param.UpdateFail}" class="alert alert-danger alert-dismissible fade show" role="alert">
     更新用户失败，请检查数据是否合法
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>

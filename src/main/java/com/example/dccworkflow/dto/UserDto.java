@@ -1,6 +1,8 @@
 package com.example.dccworkflow.dto;
 
-public class UserDto {
+import java.io.Serializable;
+
+public class UserDto implements Serializable {
     private Long id;
     private String username;
     private Boolean enabled;

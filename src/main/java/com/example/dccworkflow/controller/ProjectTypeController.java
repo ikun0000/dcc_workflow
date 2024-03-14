@@ -19,7 +19,6 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/projectType")
-@PreAuthorize("hasAuthority('edit_project_type')")
 public class ProjectTypeController {
     private ProjectTypeService projectTypeService;
 
@@ -28,11 +27,13 @@ public class ProjectTypeController {
     }
 
     @GetMapping("/parentTypePage")
+    @PreAuthorize("hasAuthority('edit_project_type')")
     public String typePage() {
         return "projectType/parentTypePage";
     }
 
     @GetMapping("/parentType.bt")
+    @PreAuthorize("hasAuthority('edit_project_type')")
     @ResponseBody
     public Result<BTResult<ProjectTypeDto>> parentTypeBT(@RequestParam String search,
                                                          @RequestParam(defaultValue = "1") Integer page,
@@ -46,12 +47,14 @@ public class ProjectTypeController {
     }
 
     @PostMapping("/addParentType")
+    @PreAuthorize("hasAuthority('edit_project_type')")
     public RedirectView addParentType(@RequestParam String name) {
         projectTypeService.addProjectType(name);
         return new RedirectView("/projectType/parentTypePage");
     }
 
     @PostMapping("/removeParentType")
+    @PreAuthorize("hasAuthority('edit_project_type')")
     @ResponseBody
     public Result<Object> removeParentType(@RequestParam Long id) {
         try {
@@ -69,17 +72,29 @@ public class ProjectTypeController {
         return Result.of(ResultType.SUCCESS, projectTypeDtos.getContent());
     }
 
+    @GetMapping("/subProjectType.json")
+    @ResponseBody
+    public Result<List<SubProjectTypeDto>> subProjectTypeJSON(@RequestParam Long projectTypeId) {
+        Page<SubProjectTypeDto> projectTypeDto = projectTypeService.getSubProjectTypeDto(projectTypeId, null,
+                Pageable.unpaged());
+
+        return Result.of(ResultType.SUCCESS, projectTypeDto.getContent());
+    }
+
     @GetMapping("/subTypePage")
+    @PreAuthorize("hasAuthority('edit_project_type')")
     public String subTypePage() {
         return "projectType/subTypePage";
     }
 
     @GetMapping("/subType.bt")
+    @PreAuthorize("hasAuthority('edit_project_type')")
     @ResponseBody
     public Result<BTResult<SubProjectTypeDto>> subTypeBT(@RequestParam String search,
                                                          @RequestParam(defaultValue = "1") Integer page,
                                                          @RequestParam(defaultValue = "10") Integer size) {
-        Page<SubProjectTypeDto> subProjectTypeDtos = projectTypeService.getSubProjectTypeDto(search,
+        Page<SubProjectTypeDto> subProjectTypeDtos = projectTypeService.getSubProjectTypeDto(null,
+                search,
                 PageRequest.of(page - 1, size,
                         Sort.by(Sort.Direction.DESC, "id")));
 
@@ -88,6 +103,7 @@ public class ProjectTypeController {
     }
 
     @PostMapping("/addSubProjectType")
+    @PreAuthorize("hasAuthority('edit_project_type')")
     public RedirectView addSubProjectType(@RequestParam Long projectTypeId,
                                           @RequestParam String name) {
         projectTypeService.addSubProjectType(projectTypeId, name);
@@ -95,6 +111,7 @@ public class ProjectTypeController {
     }
 
     @PostMapping("/removeSubProjectType")
+    @PreAuthorize("hasAuthority('edit_project_type')")
     @ResponseBody
     public Result<Object> removeSubProjectType(@RequestParam Long id) {
         try {

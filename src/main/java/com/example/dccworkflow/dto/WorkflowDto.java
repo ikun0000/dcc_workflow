@@ -2,9 +2,10 @@ package com.example.dccworkflow.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class WorkflowDto {
+public class WorkflowDto implements Serializable {
     private String procDefId;
     private String procDefName;
     private String procDefKey;

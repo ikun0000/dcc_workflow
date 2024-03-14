@@ -45,5 +45,7 @@ logging:
     org.hibernate.engine.QueryParameters: debug
     org.hibernate.engine.query.HQLQueryPlan: debug
 
+project-file-root: D:\\UploadRoot\\dcc_workflow\\project
+
 
 

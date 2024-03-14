@@ -39,12 +39,9 @@ public class ProjectForm {
     @ManyToOne
     private SubProjectType subProjectType;
 
-    private LocalDate visitTime;
+    private LocalDate visitDate;
 
-    private LocalDate deliveryTime;
-
-    @ManyToOne
-    private User originEngineer;
+    private LocalDate deliveryDate;
 
     @ManyToOne
     private User executeEngineer;
@@ -52,8 +49,6 @@ public class ProjectForm {
     private Boolean materialArrangement;
 
     private String note;
-
-    private String projectFileLocation;
 
     @OneToMany(mappedBy = "projectForm")
     private List<ProjectFile> projectFiles;
@@ -170,28 +165,20 @@ public class ProjectForm {
         this.subProjectType = subProjectType;
     }
 
-    public LocalDate getVisitTime() {
-        return visitTime;
+    public LocalDate getVisitDate() {
+        return visitDate;
     }
 
-    public void setVisitTime(LocalDate visitTime) {
-        this.visitTime = visitTime;
+    public void setVisitDate(LocalDate visitDate) {
+        this.visitDate = visitDate;
     }
 
-    public LocalDate getDeliveryTime() {
-        return deliveryTime;
+    public LocalDate getDeliveryDate() {
+        return deliveryDate;
     }
 
-    public void setDeliveryTime(LocalDate deliveryTime) {
-        this.deliveryTime = deliveryTime;
-    }
-
-    public User getOriginEngineer() {
-        return originEngineer;
-    }
-
-    public void setOriginEngineer(User originEngineer) {
-        this.originEngineer = originEngineer;
+    public void setDeliveryDate(LocalDate deliveryDate) {
+        this.deliveryDate = deliveryDate;
     }
 
     public User getExecuteEngineer() {
@@ -216,14 +203,6 @@ public class ProjectForm {
 
     public void setNote(String note) {
         this.note = note;
-    }
-
-    public String getProjectFileLocation() {
-        return projectFileLocation;
-    }
-
-    public void setProjectFileLocation(String projectFileLocation) {
-        this.projectFileLocation = projectFileLocation;
     }
 
     public Boolean getInvoiceIssued() {

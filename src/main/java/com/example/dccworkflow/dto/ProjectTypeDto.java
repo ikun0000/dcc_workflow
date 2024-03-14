@@ -1,7 +1,9 @@
 package com.example.dccworkflow.dto;
 
 
-public class ProjectTypeDto {
+import java.io.Serializable;
+
+public class ProjectTypeDto implements Serializable {
     private Long id;
     private String name;
 

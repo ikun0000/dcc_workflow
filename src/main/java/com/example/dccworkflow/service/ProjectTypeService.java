@@ -81,13 +81,19 @@ public class ProjectTypeService {
     }
 
     @Transactional(readOnly = true)
-    public Page<SubProjectTypeDto> getSubProjectTypeDto(String search, Pageable pageable) {
+    public Page<SubProjectTypeDto> getSubProjectTypeDto(Long projectTypeId,
+                                                        String search,
+                                                        Pageable pageable) {
         QSubProjectType qSubProjectType = QSubProjectType.subProjectType;
 
         BooleanBuilder whereCase = new BooleanBuilder();
+        if (projectTypeId != null) {
+            whereCase.and(qSubProjectType.projectType.id.eq(projectTypeId));
+        }
+
         if (search != null && !search.isBlank()) {
-            whereCase.or(qSubProjectType.name.like(LikeWrap.like(search)))
-                    .or(qSubProjectType.projectType.name.like(LikeWrap.like(search)));
+            whereCase.andAnyOf(qSubProjectType.name.like(LikeWrap.like(search)),
+                    qSubProjectType.projectType.name.like(LikeWrap.like(search)));
         }
 
         Page<SubProjectType> subProjectTypePage = subProjectTypeRepository.findAll(whereCase, pageable);

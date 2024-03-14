@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>戴伟斯科技 - 项目详情</title>
+
+    <th:block th:insert="~{share/resource::css}"></th:block>
+</head>
+<body>
+<div th:replace="~{share/navbar::nav}"></div>
+
+<div class="container">
+    <h1>项目详情 <span class="badge bg-secondary" th:text="${projectForm.serialNumber}"></span></h1>
+
+    <form method="post" th:action="@{/projectManagement/updateProject}">
+        <table class="table table-striped table-bordered">
+
+        </table>
+    </form>
+</div>
+
+<th:block th:insert="~{share/resource::js}"></th:block>
+</body>
+</html>

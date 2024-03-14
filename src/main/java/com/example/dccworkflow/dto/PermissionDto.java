@@ -1,6 +1,8 @@
 package com.example.dccworkflow.dto;
 
-public class PermissionDto {
+import java.io.Serializable;
+
+public class PermissionDto implements Serializable {
     private Long id;
     private String name;
     private String content;
