@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>戴伟斯科技 - 工程师指派</title>
+
+    <th:block th:insert="~{share/resource::css}"></th:block>
+</head>
+<body>
+<div th:replace="~{share/navbar::nav}"></div>
+
+<div class="container-fluid">
+    <h1>未完成任务</h1>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>序列号</th>
+            <th>客户编号</th>
+            <th>客户名</th>
+            <th>地址</th>
+            <th>项目类型</th>
+            <th>项目子类型</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="task:${unFinishTask}">
+            <td th:text="${task.serialNumber}"></td>
+            <td th:text="${task.clientNum}"></td>
+            <td th:text="${task.clientName}"></td>
+            <td th:text="${task.clientAddress}"></td>
+            <td th:text="${task.subProjectType.projectType.name}"></td>
+            <td th:text="${task.subProjectType.name}"></td>
+            <td>
+                <a th:href="@{/projectTask/setEngineerPage(id=${task.id})}" class="btn btn-secondary">去完成</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+
+<th:block th:insert="~{share/resource::js}"></th:block>
+</body>
+</html>

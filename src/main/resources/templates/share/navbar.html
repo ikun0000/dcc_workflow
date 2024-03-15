@@ -14,8 +14,16 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link" aria-current="page" th:href="@{/}">工作任务</a>
+                <li sec:authorize="hasAuthority('edit_engineer')" class="nav-item">
+                    <a class="nav-link" aria-current="page" th:href="@{/projectTask/listHRproject}">人手分配任务</a>
+                </li>
+
+                <li sec:authorize="hasAuthority('edit_project_engine')" class="nav-item">
+                    <a class="nav-link" aria-current="page" th:href="@{/projectTask/listEngineerProjectPage}">工程师任务</a>
+                </li>
+
+                <li sec:authorize="hasAuthority('edit_material')" class="nav-item">
+                    <a class="nav-link" aria-current="page" th:href="@{/projectTask/listWarehouseProject}">仓库任务</a>
                 </li>
 
                 <li sec:authorize="hasAuthority('project_management')" class="nav-item">

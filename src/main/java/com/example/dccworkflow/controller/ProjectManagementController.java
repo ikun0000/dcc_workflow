@@ -7,8 +7,10 @@ import com.example.dccworkflow.dto.Result;
 import com.example.dccworkflow.entity.User;
 import com.example.dccworkflow.enums.ResultType;
 import com.example.dccworkflow.exception.ProjectNotFoundException;
+import com.example.dccworkflow.exception.VisitDateDefineException;
 import com.example.dccworkflow.service.ClientService;
 import com.example.dccworkflow.service.ProjectManagementService;
+import org.activiti.engine.task.Task;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -92,8 +94,15 @@ public class ProjectManagementController {
                                 Model model) throws ProjectNotFoundException {
         model.addAttribute("projectForm",
                 projectManagementService.getProjectForm(projectFormId));
-        model.addAttribute("projectHistory",
+        model.addAttribute("projectHistoryList",
                 projectManagementService.getProjectTaskHistory(projectFormId));
+
+        try {
+            List<Task> taskList = projectManagementService.getTaskByProjectFormId(projectFormId);
+            model.addAttribute("taskList", taskList);
+        } catch (ProjectNotFoundException e) {
+
+        }
         return "myProject/projectDetail";
     }
 
@@ -104,27 +113,44 @@ public class ProjectManagementController {
         return new RedirectView("/projectManagement/myProjectListPage");
     }
 
-    @PostMapping("/updateProjectInfo")
-    public RedirectView updateProjectInfo(@RequestParam Long id,
-                                          @RequestParam String brand,
-                                          @RequestParam String city,
-                                          @RequestParam String clientName,
-                                          @RequestParam String clientAddress,
-                                          @RequestParam String managePhone,
-                                          @RequestParam String constructionPhone,
-                                          @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate visitDate,
-                                          @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate deliveryDate,
-                                          @RequestParam String note) throws ProjectNotFoundException {
-        projectManagementService.updateProjectFormInfo(id,
-                brand,
-                city,
-                clientName,
-                clientAddress,
-                managePhone,
-                constructionPhone,
-                visitDate,
-                deliveryDate,
-                note);
-        return new RedirectView("/projectManagement/myProjectListPage");
+    @PostMapping("/setVisitDateContinue")
+    @PreAuthorize("hasAuthority('project_management')")
+    public RedirectView setVisitDateContinue(@RequestParam Long id,
+                                             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate visitDate)
+            throws VisitDateDefineException, ProjectNotFoundException {
+        projectManagementService.setVisitDateAndContinueProcess(id, visitDate);
+        return new RedirectView("/projectManagement/detail/" + id);
+    }
+
+
+    @PostMapping("/setDeliveryDate")
+    @PreAuthorize("hasAuthority('project_management')")
+    public RedirectView setDeliveryDate(@RequestParam Long id,
+                                        @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate deliveryDate)
+            throws VisitDateDefineException, ProjectNotFoundException {
+        projectManagementService.setDeliveryDate(id, deliveryDate);
+        return new RedirectView("/projectManagement/detail/" + id);
+    }
+
+    @PostMapping("/setProjectNote")
+    @PreAuthorize("hasAuthority('project_management')")
+    public RedirectView setVisitDateContinue(@RequestParam Long id,
+                                             String note) throws ProjectNotFoundException {
+        projectManagementService.setProjectNote(id, note);
+        return new RedirectView("/projectManagement/detail/" + id);
+    }
+
+    @PostMapping("/getPayForm")
+    @PreAuthorize("hasAuthority('project_management')")
+    public RedirectView getPayForm(@RequestParam Long id) throws ProjectNotFoundException {
+        projectManagementService.finishGetPayForm(id);
+        return new RedirectView("/projectManagement/detail/" + id);
+    }
+
+    @PostMapping("/getMoney")
+    @PreAuthorize("hasAuthority('project_management')")
+    public RedirectView getMoney(@RequestParam Long id) throws ProjectNotFoundException {
+        projectManagementService.finishGetMoney(id);
+        return new RedirectView("/projectManagement/detail/" + id);
     }
 }

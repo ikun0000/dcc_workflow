@@ -3,12 +3,11 @@ package com.example.dccworkflow.service;
 import com.example.dccworkflow.dto.ProjectFormDto;
 import com.example.dccworkflow.entity.*;
 import com.example.dccworkflow.enums.ProjectState;
+import com.example.dccworkflow.exception.AssigneeLackException;
 import com.example.dccworkflow.exception.ClientNotFoundException;
 import com.example.dccworkflow.exception.ProjectNotFoundException;
-import com.example.dccworkflow.repository.ClientRepository;
-import com.example.dccworkflow.repository.ProjectFileRepository;
-import com.example.dccworkflow.repository.ProjectFormRepository;
-import com.example.dccworkflow.repository.ProjectLogRepository;
+import com.example.dccworkflow.exception.VisitDateDefineException;
+import com.example.dccworkflow.repository.*;
 import com.example.dccworkflow.utils.LikeWrap;
 import com.querydsl.core.BooleanBuilder;
 import org.activiti.engine.HistoryService;
@@ -29,7 +28,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -43,7 +44,7 @@ public class ProjectManagementService {
     private ClientRepository clientRepository;
     private SerialGenerator serialGenerator;
     private HistoryService historyService;
-
+    private TaskAssigneeRepository taskAssigneeRepository;
     private RuntimeService runtimeService;
     private TaskService taskService;
 
@@ -58,6 +59,7 @@ public class ProjectManagementService {
                                     HistoryService historyService,
                                     RuntimeService runtimeService,
                                     TaskService taskService,
+                                    TaskAssigneeRepository taskAssigneeRepository,
                                     @Value("${project-file-root}") String projectFileRoot) {
         this.projectFormRepository = projectFormRepository;
         this.projectFileRepository = projectFileRepository;
@@ -67,6 +69,7 @@ public class ProjectManagementService {
         this.historyService = historyService;
         this.runtimeService = runtimeService;
         this.taskService = taskService;
+        this.taskAssigneeRepository = taskAssigneeRepository;
         this.projectFileRoot = projectFileRoot;
     }
 
@@ -76,7 +79,7 @@ public class ProjectManagementService {
                                     Long subProjectTypeId,
                                     String constructionTeamPhone,
                                     LocalDate visitDate,
-                                    LocalDate deliveryDate) throws ClientNotFoundException {
+                                    LocalDate deliveryDate) throws ClientNotFoundException, AssigneeLackException {
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(ClientNotFoundException::new);
 
@@ -105,6 +108,9 @@ public class ProjectManagementService {
         projectForm.setVisitDate(visitDate);
         projectForm.setDeliveryDate(deliveryDate);
 
+        // 物料准备情况
+        projectForm.setMaterialArrangement(false);
+
         // 创建时间和最后修改时间
         projectForm.setCreateDateTime(LocalDateTime.now());
         projectForm.setLastModifyDateTime(LocalDateTime.now());
@@ -119,12 +125,25 @@ public class ProjectManagementService {
                 projectForm.getSerialNumber().replaceAll("\\.", "_"));
         projectDir.mkdir();
 
+        // 启动流程实例，关联业务key（表ID）
+        Map<String, Object> processVars = new HashMap<>();
+        processVars.put("handler", handler.getUsername());
+
+        // 设置流程的负责人，使用activiti变量（人力主管和仓库主管）
+        for (TaskAssignee taskAssignee : taskAssigneeRepository.findAll(QTaskAssignee.taskAssignee.processKey.eq(FLOW_KEY))) {
+            processVars.put(taskAssignee.getVariableName(),
+                    taskAssignee.getUser().getUsername());
+        }
+        // 流程负责人缺少
+        if (processVars.size() < 3) {
+            throw new AssigneeLackException();
+        }
+
         // 保存
         projectForm = projectFormRepository.save(projectForm);
 
-        // 启动流程实例，关联业务key（表ID）
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(FLOW_KEY,
-                projectForm.getId().toString());
+                projectForm.getId().toString(), processVars);
 
         // 记录运行实例ID和流程定义
         projectForm.setProcessInstanceId(processInstance.getId());
@@ -136,7 +155,6 @@ public class ProjectManagementService {
                     .processInstanceId(processInstance.getId())
                     .singleResult();
 
-            taskService.setAssignee(task.getId(), handler.getUsername());
             taskService.complete(task.getId());
         }
 
@@ -265,6 +283,16 @@ public class ProjectManagementService {
                 .orElseThrow(ProjectNotFoundException::new);
     }
 
+    @Transactional
+    public List<Task> getTaskByProjectFormId(Long projectFormId) throws ProjectNotFoundException {
+        ProjectForm projectForm = projectFormRepository.findById(projectFormId)
+                .orElseThrow(ProjectNotFoundException::new);
+
+        return taskService.createTaskQuery()
+                .processInstanceId(projectForm.getProcessInstanceId())
+                .list();
+    }
+
     @Transactional(readOnly = true)
     public List<HistoricTaskInstance> getProjectTaskHistory(Long projectFormId) throws ProjectNotFoundException {
         ProjectForm projectForm = getProjectForm(projectFormId);
@@ -274,5 +302,68 @@ public class ProjectManagementService {
                 .orderByHistoricTaskInstanceStartTime()
                 .desc()
                 .list();
+    }
+
+    @Transactional
+    public ProjectForm setVisitDateAndContinueProcess(Long id,
+                                                      LocalDate visitDate) throws ProjectNotFoundException,
+            VisitDateDefineException {
+        ProjectForm projectForm = getProjectForm(id);
+
+        if (projectForm.getVisitDate() != null) {
+            throw new VisitDateDefineException();
+        }
+        projectForm.setVisitDate(visitDate);
+
+        Task task = taskService.createTaskQuery()
+                .processInstanceId(projectForm.getProcessInstanceId())
+                .singleResult();
+
+        taskService.complete(task.getId());
+
+        return projectForm;
+    }
+
+    @Transactional
+    public ProjectForm setDeliveryDate(Long id, LocalDate deliveryDate) throws ProjectNotFoundException {
+        ProjectForm projectForm = getProjectForm(id);
+        projectForm.setDeliveryDate(deliveryDate);
+        return projectForm;
+    }
+
+    @Transactional
+    public ProjectForm setProjectNote(Long id, String note) throws ProjectNotFoundException {
+        ProjectForm projectForm = getProjectForm(id);
+        projectForm.setNote(note);
+        return projectForm;
+    }
+
+    @Transactional
+    public ProjectForm finishGetPayForm(Long projectFormId) throws ProjectNotFoundException {
+        ProjectForm projectForm = getProjectForm(projectFormId);
+
+        Task task = taskService.createTaskQuery()
+                .processInstanceId(projectForm.getProcessInstanceId())
+                .singleResult();
+
+        taskService.complete(task.getId());
+
+        return projectForm;
+    }
+
+    @Transactional
+    public ProjectForm finishGetMoney(Long projectFormId) throws ProjectNotFoundException {
+        ProjectForm projectForm = getProjectForm(projectFormId);
+
+        projectForm.setFinished(true);
+        projectForm.setProjectState(ProjectState.FINISH.getCode());
+
+        Task task = taskService.createTaskQuery()
+                .processInstanceId(projectForm.getProcessInstanceId())
+                .singleResult();
+
+        taskService.complete(task.getId());
+
+        return projectForm;
     }
 }

@@ -22,7 +22,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -150,6 +152,19 @@ public class UserService implements UserDetailsService {
                     BeanUtils.copyProperties(role, dto);
                     return dto;
                 })
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<User> getUserWithRole(String name) {
+        Optional<Role> roleOptional = roleRepository.findByName(name);
+        if (roleOptional.isEmpty()) {
+            return new ArrayList<>();
+        }
+        Role role = roleOptional.get();
+
+        return userRepository.findAll()
+                .stream().filter(user -> user.getRoles().contains(role))
                 .toList();
     }
 }
